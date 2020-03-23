@@ -26,7 +26,7 @@ class BangOnlineServer {
             // ... and wait for reply
             socket.on('login', (login) => {
                 if(login.username == null || login.username.length < 3 ) socket.emit('login', {text: 'Username non valido.'});
-                else if(this.players.includes(login.username)) socket.emit('login', {text: 'Username già esistente.'});
+                else if(this.players.map( (socket) => socket.username ).includes(login.username)) socket.emit('login', {text: 'Username già esistente.'});
                 else this.addNewPlayer(socket, login.username);
             });
         }
@@ -43,7 +43,7 @@ class BangOnlineServer {
         socket.username = username;
         this.players.push( socket );
         console.log( username + " logged in" );
-        this.rebuildClient();
+        this.resetClient();
 
         // Initialize socket for the game
         gameManager.init(socket, this);
@@ -52,7 +52,7 @@ class BangOnlineServer {
         socket.on('disconnect', () => {
             this.players = this.players.filter( (sock) => { return sock != socket; } );
             console.log( socket.username + " logged out" );
-            this.rebuildClient();
+            this.resetClient();
         });    
     }
 
@@ -60,8 +60,8 @@ class BangOnlineServer {
         this.last_reset = new Date();
     }
 
-    rebuildClient() {
-        this.io.sockets.emit('rebuild', {
+    resetClient() {
+        this.io.sockets.emit('reset', {
             logged: this.players.map( (socket) => { return {username: socket.username}; }), 
             last_reset: utils.hourToString( this.last_reset )
         });
