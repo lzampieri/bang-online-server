@@ -66,6 +66,12 @@ class BangOnlineServer {
             last_reset: utils.hourToString( this.last_reset )
         });
     }
+
+    getFromDeck(n) {
+        var toGive = this.deck.slice(0,n);
+        this.deck = this.deck.slice(n);
+        return toGive;
+    }
 }
 
 module.exports = BangOnlineServer;

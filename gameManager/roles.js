@@ -34,6 +34,7 @@ class Outlaw {
 }
 
 const config = {
+    1: [ new Sheriff(10)],
     4: [ new Sheriff(), new Renegade(), new Outlaw(),   new Outlaw() ],
     5: [ new Sheriff(), new Vice(1),    new Renegade(1),new Outlaw(1),  new Outlaw(1) ],
     6: [ new Sheriff(), new Vice(),     new Renegade(), new Outlaw(),   new Outlaw(),   new Outlaw() ],
