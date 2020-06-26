@@ -20,13 +20,15 @@ function give_roles(theServer) {
         for( var i=0; i < theServer.players.length; i++ ) {
             theServer.players[i].role = rolesArray[i];
             theServer.players[i].lifepoints = 4 + rolesArray[i].lifebonus;
+            theServer.players[i].hidden_cards = [];
             theServer.players[i].emit( 'startGame', {
                 role: rolesArray[i].tipo,
                 lifepoints: theServer.players[i].lifepoints,
-                cards: theServer.getFromDeck(theServer.players[i].lifepoints)
+                cards: theServer.getFromDeck(i,theServer.players[i].lifepoints)
             });
         }
         theServer.login_allowed = false;
+        theServer.broadcastPlayers();
         return true;
     } else {
         return false;

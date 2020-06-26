@@ -24,7 +24,7 @@ class BangOnlineServer {
         if ( this.login_allowed ) {
             socket.emit('login', {text: "Inserisci username"} );
             // ... and wait for reply
-            socket.on('login', (login) => {
+            socket.on('login_u', (login) => {
                 if(login.username == null || login.username.length < 3 ) socket.emit('login', {text: 'Username non valido.'});
                 else if(this.players.map( (socket) => socket.username ).includes(login.username)) socket.emit('login', {text: 'Username già esistente.'});
                 else this.addNewPlayer(socket, login.username);
@@ -62,15 +62,25 @@ class BangOnlineServer {
 
     resetClient() {
         this.io.sockets.emit('reset', {
-            logged: this.players.map( (socket) => { return {username: socket.username}; }), 
+            players: this.players.map( (player) => { return {username: player.username}; }), 
             last_reset: utils.hourToString( this.last_reset )
         });
     }
 
-    getFromDeck(n) {
+    getFromDeck(i,n) {
         var toGive = this.deck.slice(0,n);
         this.deck = this.deck.slice(n);
+        this.players[i].hidden_cards.push(...toGive);
         return toGive;
+    }
+
+    broadcastPlayers() {
+
+        this.io.sockets.emit( 'updatePlayers', {players: this.players.map( (player) => { return {
+            username: player.username,
+            lifepoints: player.lifepoints,
+            hidden_cards: player.hidden_cards.length
+        }; } ) } );
     }
 }
 
